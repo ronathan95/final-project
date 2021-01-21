@@ -11,8 +11,8 @@ app.use(express.static(path.join(__dirname, "..", "client", "public")));
 
 app.get("/test", (req, res) => {
     getJobtitle()
-        .then((result) => {
-            console.log("result: ", result);
+        .then(() => {
+            console.log("check your screenshot");
         })
         .catch((err) => {
             console.error("error in getJobtitle: ", err);
