@@ -9,10 +9,10 @@ app.use(compression());
 
 app.use(express.static(path.join(__dirname, "..", "client", "public")));
 
-app.get("/test", (req, res) => {
+app.get("/indeed-search", (req, res) => {
     getJobtitle()
-        .then(() => {
-            console.log("check your screenshot");
+        .then((jobTitlesArray) => {
+            res.json({ jobTitlesArray });
         })
         .catch((err) => {
             console.error("error in getJobtitle: ", err);

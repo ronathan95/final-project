@@ -29,10 +29,13 @@ module.exports.getJobtitle = function () {
             const page = await browser.newPage();
             await page.waitFor(500);
             await page.goto(indeedUrl, { waitUntil: "networkidle2" });
-            // let data = await page.screenshot({ path: "test.png" });
-            await page.screenshot({ path: "test.png" });
+            let data = await page.evaluate(() => {
+                let jobTitles = document.querySelectorAll(".title > a");
+                const jobTitlesList = [...jobTitles];
+                return jobTitlesList.map((title) => title.innerText);
+            });
             await browser.close();
-            // resolve(data);
+            resolve(data);
         } catch (error) {
             console.log("error: ", error);
             reject(error);

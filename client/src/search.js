@@ -1,6 +1,20 @@
+import { useEffect } from "react";
+import axios from "./axios";
+
 export default function Search() {
     let userInputJob = "";
     let userInputCity = "";
+
+    useEffect(() => {
+        axios
+            .get("/indeed-search")
+            .then(({ data }) => {
+                console.log("data.jobTitlesArray: ", data.jobTitlesArray);
+            })
+            .catch((err) => {
+                console.error("error on axios.get(/indeed-search): ", err);
+            });
+    }, []);
 
     const handleUserInputJob = (e) => {
         userInputJob = e.target.value;
