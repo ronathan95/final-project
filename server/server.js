@@ -30,8 +30,8 @@ app.use(express.static(path.join(__dirname, "..", "client", "public")));
 app.post("/indeed-search", (req, res) => {
     const { userInputJob, userInputCity } = req.body;
     getJobtitle(userInputJob, userInputCity)
-        .then((jobTitlesArray) => {
-            console.log(jobTitlesArray);
+        .then((data) => {
+            console.log(data.firstPageResults);
             // res.json({ jobTitlesArray });
         })
         .catch((err) => {

@@ -19,6 +19,8 @@ async function puppeteerConfig() {
     return browser;
 }
 
+//await page.screenshot({ path: "test.png" }); ---> screenshot for testing
+
 module.exports.getJobtitle = function (job, city) {
     return new Promise(async (resolve, reject) => {
         const indeedUrl = `https://de.indeed.com/Jobs?q=${job}&l=${city}`;
@@ -32,25 +34,23 @@ module.exports.getJobtitle = function (job, city) {
                 // getting jobs on current page
                 let jobTitles = document.querySelectorAll(".title > a");
                 const jobTitlesList = [...jobTitles];
-                // // checking for more pages with results
-                // let isThereMorePages = false;
-                // let morePagesButtons = document.querySelectorAll(
-                //     ".pagination-list"
-                // );
-                // const morePages = [...morePagesButtons];
-                // if (morePages.length > 0) {
-                //     isThereMorePages = true;
-                // }
-
-                // returning jobs results from 1st/only page
-                // return jobTitlesList.map((title) => title.innerText);
-
-                jobTitlesList.map((title) => {
-                    jobsFound.push(title.innerText);
+                jobsFound = jobTitlesList.map((title) => {
+                    return { firstPageResults: title.innerText };
                 });
-                return jobsFound;
             });
-            //await page.screenshot({ path: "test.png" }); ---> screenshot for testing
+            // // checking for more pages with results
+            // let morePagesButtons = document.querySelectorAll(
+            //     ".pagination-list"
+            // );
+            // const morePages = [...morePagesButtons];
+            // if (morePages.length == 0) {
+            //     return jobsFound;
+            // } else {
+            //     let pages = document.querySelectorAll(".pagination-list > li");
+            //     const pagesList = [...pages];
+            //     await page.click(pagesList[0]);
+            //     await page.screenshot({ path: "test.png" });
+            // }
             await browser.close();
             resolve(data);
         } catch (error) {
