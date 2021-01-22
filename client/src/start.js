@@ -15,7 +15,11 @@ const store = createStore(
 
 let elem;
 
-elem = <App />;
+elem = (
+    <Provider store={store}>
+        <App />
+    </Provider>
+);
 
 ReactDOM.render(elem, document.querySelector("main"));
 

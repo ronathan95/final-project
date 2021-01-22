@@ -1,18 +1,38 @@
 const express = require("express");
 const app = express();
 const compression = require("compression");
+const csurf = require("csurf");
 const path = require("path");
 
 const { getJobtitle } = require("../puppeteer-jobs-search");
 
+/////////////////////////////////////////
+
 app.use(compression());
+
+app.use(
+    express.json({
+        extended: false,
+    })
+);
+
+// app.use(csurf());
+
+// app.use(function (req, res, next) {
+//     res.cookie("mytoken", req.csrfToken());
+//     next();
+// });
 
 app.use(express.static(path.join(__dirname, "..", "client", "public")));
 
-app.get("/indeed-search", (req, res) => {
-    getJobtitle()
+/////////////////////////////////////////
+
+app.post("/indeed-search", (req, res) => {
+    const { userInputJob, userInputCity } = req.body;
+    getJobtitle(userInputJob, userInputCity)
         .then((jobTitlesArray) => {
-            res.json({ jobTitlesArray });
+            console.log(jobTitlesArray);
+            // res.json({ jobTitlesArray });
         })
         .catch((err) => {
             console.error("error in getJobtitle: ", err);
