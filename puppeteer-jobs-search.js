@@ -34,9 +34,13 @@ module.exports.getJobtitle = function (job, city) {
                 // getting jobs on current page
                 let jobTitles = document.querySelectorAll(".title > a");
                 const jobTitlesList = [...jobTitles];
-                jobsFound = jobTitlesList.map((title) => {
-                    return { firstPageResults: title.innerText };
-                });
+                return {
+                    firstPageResults: (jobsFound = jobTitlesList.map(
+                        (title) => {
+                            return title.innerText;
+                        }
+                    )),
+                };
             });
             // // checking for more pages with results
             // let morePagesButtons = document.querySelectorAll(
