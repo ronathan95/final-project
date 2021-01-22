@@ -42,21 +42,56 @@ module.exports.getJobtitle = function (job, city) {
                     )),
                 };
             });
-            // // checking for more pages with results
+            // checking for more pages with results
+
+            let pagesButtons = await page.evaluate(() => {
+                let morePagesButtons = document.querySelectorAll(
+                    ".pagination-list"
+                );
+                const morePages = [...morePagesButtons];
+                let pages = document.querySelectorAll(".pn");
+                const pagesBtns = [...pages];
+                return pagesBtns;
+            });
+            await page.click(
+                ".pagination > .pagination-list > li:nth-child(2) > a > .pn"
+            );
+            await page.waitFor(5000);
+            data = await page.evaluate(() => {
+                // getting jobs on current page
+                let jobTitles = document.querySelectorAll(".title > a");
+                const jobTitlesList = [...jobTitles];
+                return {
+                    secondPageResults: (jobsFound = jobTitlesList.map(
+                        (title) => {
+                            return title.innerText;
+                        }
+                    )),
+                };
+            });
+
             // let morePagesButtons = document.querySelectorAll(
             //     ".pagination-list"
             // );
             // const morePages = [...morePagesButtons];
+            // let pages = document.querySelectorAll(".pagination-list > li");
+            // const pagesList = [...pages];
+            // await page.click(pagesList[0]);
+            // await page.screenshot({ path: "test.png" });
+            await browser.close();
+            resolve(data);
+            //////////////
             // if (morePages.length == 0) {
-            //     return jobsFound;
+            //     await browser.close();
+            //     resolve(data);
             // } else {
             //     let pages = document.querySelectorAll(".pagination-list > li");
             //     const pagesList = [...pages];
             //     await page.click(pagesList[0]);
             //     await page.screenshot({ path: "test.png" });
+            //     await browser.close();
+            //     resolve(data);
             // }
-            await browser.close();
-            resolve(data);
         } catch (error) {
             console.log("error: ", error);
             reject(error);
