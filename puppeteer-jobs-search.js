@@ -48,7 +48,6 @@ module.exports.getJobtitle = function (job, city) {
                 jobTitlesList.map((title) => {
                     jobsFound.push(title.innerText);
                 });
-
                 return jobsFound;
             });
             //await page.screenshot({ path: "test.png" }); ---> screenshot for testing
