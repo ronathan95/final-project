@@ -10,6 +10,8 @@ const {
     getJobDescription,
 } = require("../puppeteer-jobs-search");
 
+require("events").EventEmitter.defaultMaxListeners = 15;
+
 /////////////////////////////////////////
 
 app.use(compression());
@@ -44,19 +46,18 @@ app.post("/indeed-search", (req, res) => {
         .then((jobsFound) => {
             jobs = jobsFound;
             for (let i = 0; i < jobs.length; i++) {
-                getJobDescription(jobs[i].link)
-                    .then((description) => {
-                        jobs[i].description = description;
-                    })
-                    .catch((err) => {
-                        console.error("error in getJobDescription: ", err);
-                    });
+                jobs[i].id = i + 1;
             }
-            console.log(jobs);
+            res.json({ jobs: jobs });
         })
         .catch((err) => {
             console.error("error in getJobtitleAndLink: ", err);
         });
+});
+
+app.get("/get-job-description/:link", (req, res) => {
+    const { link } = req.params;
+    console.log("link: ", link);
 });
 
 app.get("*", function (req, res) {

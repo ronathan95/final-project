@@ -1,23 +1,22 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateUserInputJob, updateUserInputCity } from "./actions";
+import { getJobDescription } from "../../puppeteer-jobs-search";
+import {
+    updateUserInputJob,
+    updateUserInputCity,
+    updateJobResults,
+} from "./actions";
 import axios from "./axios";
 
 export default function Search() {
     const dispatch = useDispatch();
     const userInputJob = useSelector((state) => state && state.userInputJob);
     const userInputCity = useSelector((state) => state && state.userInputCity);
+    const jobResults = useSelector((state) => state && state.jobsResultsArray);
 
     // useEffect(() => {
-    //     axios
-    //         .get("/indeed-search")
-    //         .then(({ data }) => {
-    //             console.log("data.jobTitlesArray: ", data.jobTitlesArray);
-    //         })
-    //         .catch((err) => {
-    //             console.error("error on axios.get(/indeed-search): ", err);
-    //         });
-    // }, []);
+    //     console.log(jobResults);
+    // }, [jobResults]);
 
     const handleUserInputJob = (e) => {
         dispatch(updateUserInputJob(e.target.value));
@@ -29,9 +28,25 @@ export default function Search() {
     const handleSearch = () => {
         axios
             .post("/indeed-search", { userInputJob, userInputCity })
-            .then(() => {})
+            .then(({ data }) => {
+                dispatch(updateJobResults(data.jobs));
+            })
             .catch((err) => {
                 console.error("error on axios.post(/indeed-search): ", err);
+            });
+    };
+
+    const getJobDescription = (link) => {
+        axios
+            .get(`/get-job-description/${link}`)
+            .then(() => {
+                console.log("done");
+            })
+            .catch((err) => {
+                console.error(
+                    `error on axios.get(/get-job-description/${link}): `,
+                    err
+                );
             });
     };
 
@@ -49,6 +64,14 @@ export default function Search() {
                 placeholder="enter a city"
             />
             <button onClick={handleSearch}>Search</button>
+            {jobResults &&
+                jobResults.map((job) => (
+                    <div key={job.id}>
+                        <p onClick={() => getJobDescription(job.link)}>
+                            {job.title}
+                        </p>
+                    </div>
+                ))}
         </div>
     );
 }

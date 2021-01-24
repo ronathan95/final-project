@@ -13,5 +13,12 @@ export default function reducer(state = {}, action) {
         };
     }
 
+    if (action.type == "UPDATE_JOBS_RESULTS") {
+        state = {
+            ...state,
+            jobsResultsArray: action.jobsResultsArray,
+        };
+    }
+
     return state;
 }

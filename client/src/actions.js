@@ -11,3 +11,10 @@ export async function updateUserInputCity(userInputCity) {
         userInputCity: userInputCity,
     };
 }
+
+export async function updateJobResults(jobsResultsArray) {
+    return {
+        type: "UPDATE_JOBS_RESULTS",
+        jobsResultsArray: jobsResultsArray,
+    };
+}
