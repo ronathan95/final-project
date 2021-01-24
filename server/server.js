@@ -5,7 +5,10 @@ const csurf = require("csurf");
 const cookieSession = require("cookie-session");
 const path = require("path");
 
-const { getJobtitle } = require("../puppeteer-jobs-search");
+const {
+    getJobtitleAndLink,
+    getJobDescription,
+} = require("../puppeteer-jobs-search");
 
 /////////////////////////////////////////
 
@@ -36,18 +39,23 @@ app.use(express.static(path.join(__dirname, "..", "client", "public")));
 
 app.post("/indeed-search", (req, res) => {
     const { userInputJob, userInputCity } = req.body;
-    getJobtitle(userInputJob, userInputCity)
-        .then((result) => {
-            console.log("result: ", result);
+    getJobtitleAndLink(userInputJob, userInputCity)
+        .then((data) => {
+            getJobDescription(data.firstPageResults[0].link)
+                .then((data) => {
+                    console.log("data: ", data);
+                })
+                .catch((err) => {
+                    console.error("error in getJobDescription: ", err);
+                });
             // res.json({ jobTitlesArray });
         })
         .catch((err) => {
-            console.error("error in getJobtitle: ", err);
+            console.error("error in getJobtitleAndLink: ", err);
         });
     // getJobtitle(userInputJob, userInputCity)
     //     .then(() => {
     //         console.log("done");
-    //         // res.json({ jobTitlesArray });
     //     })
     //     .catch((err) => {
     //         console.error("error in getJobtitle: ", err);
