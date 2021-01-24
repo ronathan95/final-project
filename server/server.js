@@ -39,27 +39,24 @@ app.use(express.static(path.join(__dirname, "..", "client", "public")));
 
 app.post("/indeed-search", (req, res) => {
     const { userInputJob, userInputCity } = req.body;
+    let jobs = [];
     getJobtitleAndLink(userInputJob, userInputCity)
-        .then((data) => {
-            getJobDescription(data.firstPageResults[0].link)
-                .then((data) => {
-                    console.log("data: ", data);
-                })
-                .catch((err) => {
-                    console.error("error in getJobDescription: ", err);
-                });
-            // res.json({ jobTitlesArray });
+        .then((jobsFound) => {
+            jobs = jobsFound;
+            for (let i = 0; i < jobs.length; i++) {
+                getJobDescription(jobs[i].link)
+                    .then((description) => {
+                        jobs[i].description = description;
+                    })
+                    .catch((err) => {
+                        console.error("error in getJobDescription: ", err);
+                    });
+            }
+            console.log(jobs);
         })
         .catch((err) => {
             console.error("error in getJobtitleAndLink: ", err);
         });
-    // getJobtitle(userInputJob, userInputCity)
-    //     .then(() => {
-    //         console.log("done");
-    //     })
-    //     .catch((err) => {
-    //         console.error("error in getJobtitle: ", err);
-    //     });
 });
 
 app.get("*", function (req, res) {

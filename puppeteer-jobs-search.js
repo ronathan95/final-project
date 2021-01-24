@@ -30,20 +30,16 @@ module.exports.getJobtitleAndLink = function (job, city) {
             const page = await browser.newPage();
             await page.waitFor(500);
             await page.goto(indeedUrl, { waitUntil: "networkidle2" });
-            let data = await page.evaluate(() => {
+            jobsFound = await page.evaluate(() => {
                 // getting jobs titels and links from 1st page
                 let jobTitles = document.querySelectorAll(".title > a");
                 const jobTitlesList = [...jobTitles];
-                return {
-                    firstPageResults: (jobsFound = jobTitlesList.map(
-                        (title) => {
-                            return {
-                                title: title.innerText,
-                                link: title.href,
-                            };
-                        }
-                    )),
-                };
+                return jobTitlesList.map((title) => {
+                    return {
+                        title: title.innerText,
+                        link: title.href,
+                    };
+                });
             });
 
             /////////// checking for more pages with results ///////////
@@ -73,7 +69,7 @@ module.exports.getJobtitleAndLink = function (job, city) {
             // });
 
             await browser.close();
-            resolve(data);
+            resolve(jobsFound);
         } catch (error) {
             console.log("error: ", error);
             reject(error);
@@ -89,14 +85,14 @@ module.exports.getJobDescription = function (link) {
             const page = await browser.newPage();
             await page.waitFor(500);
             await page.goto(link);
-            let data = await page.evaluate(() => {
+            let description = await page.evaluate(() => {
                 let jobDescription = document.querySelector(
                     "#jobDescriptionText"
                 );
                 return jobDescription.innerText;
             });
             await browser.close();
-            resolve(data);
+            resolve(description);
         } catch (error) {
             console.log("error: ", error);
             reject(error);
