@@ -43,11 +43,7 @@ app.post("/indeed-search", (req, res) => {
     const { userInputJob, userInputCity } = req.body;
     let jobs = [];
     getJobtitleAndLink(userInputJob, userInputCity)
-        .then((jobsFound) => {
-            jobs = jobsFound;
-            for (let i = 0; i < jobs.length; i++) {
-                jobs[i].id = i + 1;
-            }
+        .then((jobs) => {
             res.json({ jobs });
         })
         .catch((err) => {

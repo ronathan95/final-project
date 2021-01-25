@@ -38,12 +38,23 @@ module.exports.getJobtitleAndLink = function (job, city) {
                 let jobCompany = document.querySelectorAll(".company");
                 const jobTitlesList = [...jobTitles];
                 const jobCompanyList = [...jobCompany]; // ----> needs to be used to get job's company (its innerText)
-                return jobTitlesList.map((title) => {
+                const jobArray = jobTitlesList.map((title) => {
                     return {
                         title: title.innerText,
                         link: title.href,
                     };
                 });
+                for (let i = 0; i < jobArray.length; i++) {
+                    jobArray[i].id = i + 1;
+                    jobArray[i].company = jobCompanyList[i].innerText;
+                }
+                return jobArray;
+                // return jobTitlesList.map((title) => {
+                //     return {
+                //         title: title.innerText,
+                //         link: title.href,
+                //     };
+                // });
             });
 
             /////////// checking for more pages with results ///////////

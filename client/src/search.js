@@ -67,7 +67,7 @@ export default function Search() {
                             onClick={() => getJobDescription(job.id, job.link)}
                             to={"/job/" + job.id}
                         >
-                            {job.title}
+                            {job.title} at {job.company}
                         </Link>
                     </div>
                 ))}
