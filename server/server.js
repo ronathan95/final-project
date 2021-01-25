@@ -48,7 +48,7 @@ app.post("/indeed-search", (req, res) => {
             for (let i = 0; i < jobs.length; i++) {
                 jobs[i].id = i + 1;
             }
-            res.json({ jobs: jobs });
+            res.json({ jobs });
         })
         .catch((err) => {
             console.error("error in getJobtitleAndLink: ", err);
@@ -57,7 +57,13 @@ app.post("/indeed-search", (req, res) => {
 
 app.get("/get-job-description/:link", (req, res) => {
     const { link } = req.params;
-    console.log("link: ", link);
+    getJobDescription(link)
+        .then((description) => {
+            res.json({ description });
+        })
+        .catch((err) => {
+            console.error("error in getJobDescription: ", err);
+        });
 });
 
 app.get("*", function (req, res) {

@@ -1,10 +1,10 @@
-import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getJobDescription } from "../../puppeteer-jobs-search";
 import {
     updateUserInputJob,
     updateUserInputCity,
     updateJobResults,
+    updateJobDescription,
 } from "./actions";
 import axios from "./axios";
 
@@ -13,10 +13,6 @@ export default function Search() {
     const userInputJob = useSelector((state) => state && state.userInputJob);
     const userInputCity = useSelector((state) => state && state.userInputCity);
     const jobResults = useSelector((state) => state && state.jobsResultsArray);
-
-    // useEffect(() => {
-    //     console.log(jobResults);
-    // }, [jobResults]);
 
     const handleUserInputJob = (e) => {
         dispatch(updateUserInputJob(e.target.value));
@@ -36,11 +32,11 @@ export default function Search() {
             });
     };
 
-    const getJobDescription = (link) => {
+    const getJobDescription = (jobId, link) => {
         axios
-            .get(`/get-job-description/${link}`)
-            .then(() => {
-                console.log("done");
+            .get(`/get-job-description/${encodeURIComponent(link)}`)
+            .then(({ data }) => {
+                dispatch(updateJobDescription(jobId, data.description));
             })
             .catch((err) => {
                 console.error(
@@ -67,9 +63,12 @@ export default function Search() {
             {jobResults &&
                 jobResults.map((job) => (
                     <div key={job.id}>
-                        <p onClick={() => getJobDescription(job.link)}>
+                        <Link
+                            onClick={() => getJobDescription(job.id, job.link)}
+                            to={"/job/" + job.id}
+                        >
                             {job.title}
-                        </p>
+                        </Link>
                     </div>
                 ))}
         </div>

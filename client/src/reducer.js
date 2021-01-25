@@ -20,5 +20,19 @@ export default function reducer(state = {}, action) {
         };
     }
 
+    if (action.type == "UPDATE_JOB_DESCRIPTION") {
+        state = {
+            ...state,
+            jobsResultsArray: state.jobsResultsArray.map((jobObject) => {
+                jobObject.id == action.jobId &&
+                    (jobObject = {
+                        ...jobObject,
+                        description: action.jobsDescription,
+                    });
+                return jobObject;
+            }),
+        };
+    }
+
     return state;
 }

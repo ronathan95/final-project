@@ -18,3 +18,11 @@ export async function updateJobResults(jobsResultsArray) {
         jobsResultsArray: jobsResultsArray,
     };
 }
+
+export async function updateJobDescription(jobId, description) {
+    return {
+        type: "UPDATE_JOB_DESCRIPTION",
+        jobId: jobId,
+        jobsDescription: description,
+    };
+}
