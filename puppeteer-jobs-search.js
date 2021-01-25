@@ -1,6 +1,8 @@
 const puppeteerExtra = require("puppeteer-extra");
 const pluginStealth = require("puppeteer-extra-plugin-stealth");
 
+const sanitizeHtml = require("sanitize-html");
+
 let jobsFound = [];
 
 async function puppeteerConfig() {
@@ -33,7 +35,9 @@ module.exports.getJobtitleAndLink = function (job, city) {
             jobsFound = await page.evaluate(() => {
                 // getting jobs titels and links from 1st page
                 let jobTitles = document.querySelectorAll(".title > a");
+                let jobCompany = document.querySelectorAll(".company");
                 const jobTitlesList = [...jobTitles];
+                const jobCompanyList = [...jobCompany]; // ----> needs to be used to get job's company (its innerText)
                 return jobTitlesList.map((title) => {
                     return {
                         title: title.innerText,
@@ -85,14 +89,15 @@ module.exports.getJobDescription = function (link) {
             const page = await browser.newPage();
             await page.waitFor(500);
             await page.goto(link);
-            let description = await page.evaluate(() => {
+            let dirtyDescription = await page.evaluate(() => {
                 let jobDescription = document.querySelector(
                     "#jobDescriptionText"
                 );
-                return jobDescription.innerText;
+                return jobDescription.innerHTML;
             });
+            const cleanDescription = sanitizeHtml(dirtyDescription);
             await browser.close();
-            resolve(description);
+            resolve(cleanDescription);
         } catch (error) {
             console.log("error: ", error);
             reject(error);
