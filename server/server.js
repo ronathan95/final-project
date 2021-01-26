@@ -42,9 +42,9 @@ app.use(express.static(path.join(__dirname, "..", "client", "public")));
 app.post("/indeed-search", (req, res) => {
     const { userInputJob, userInputCity } = req.body;
     getJobtitleAndLink(userInputJob, userInputCity)
-        .then(({ jobsFound, nextPages }) => {
-            console.log("nextPages: ", nextPages);
-            res.json({ jobs: jobsFound });
+        .then(({ jobsFound }) => {
+            console.log("jobsFound: ", jobsFound);
+            // res.json({ jobs: jobsFound });
         })
         .catch((err) => {
             console.error("error in getJobtitleAndLink: ", err);

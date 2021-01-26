@@ -3,7 +3,8 @@ const pluginStealth = require("puppeteer-extra-plugin-stealth");
 
 const sanitizeHtml = require("sanitize-html");
 
-let jobsFound = [];
+let jobsFound = {};
+let lastId = 0;
 
 async function puppeteerConfig() {
     let browser;
@@ -32,7 +33,7 @@ module.exports.getJobtitleAndLink = function (job, city) {
             const page = await browser.newPage();
             await page.waitFor(500);
             await page.goto(indeedUrl, { waitUntil: "networkidle2" });
-            jobsFound = await page.evaluate(() => {
+            firstPageArray = await page.evaluate(() => {
                 // getting jobs titels and links from 1st page
                 let jobTitles = document.querySelectorAll(".title > a");
                 let jobCompany = document.querySelectorAll(".company");
@@ -50,11 +51,9 @@ module.exports.getJobtitleAndLink = function (job, city) {
                 }
                 return jobArray;
             });
-
-            // let pagesObj = {};
-            // for (let i = 2; i <= numOfNextPages; i++) {
-            //     pagesObj[i] = [];
-            // }
+            const one = 1;
+            jobsFound[one] = firstPageArray;
+            lastId = jobsFound[one][jobsFound[one].length - 1].id;
 
             /////////// checking for more pages with results ///////////
 
@@ -74,11 +73,7 @@ module.exports.getJobtitleAndLink = function (job, city) {
                 }
             });
 
-            // nextPagesBtns[nextPagesBtns.length-1].innerText ----> getting last btn and check value for number (page) / empty string (>)
-
-            ////////// trying to get results from next pages //////////////
-
-            let nextPages = {};
+            ////////// getting results from next pages //////////////
 
             if (morePages.areThereMore) {
                 let start = 10;
@@ -98,11 +93,13 @@ module.exports.getJobtitleAndLink = function (job, city) {
                             };
                         });
                         for (let i = 0; i < jobArray.length; i++) {
+                            // jobArray[i].id = lastId + 1;
                             jobArray[i].company = jobCompanyList[i].innerText;
+                            // lastId++;
                         }
                         return jobArray;
                     });
-                    nextPages[pageNum] = jobsFoundOnSecondPage;
+                    jobsFound[pageNum] = jobsFoundOnSecondPage;
 
                     morePages = await page.evaluate(() => {
                         const nextPagesBtns = document.querySelectorAll(".pn");
@@ -119,9 +116,8 @@ module.exports.getJobtitleAndLink = function (job, city) {
                 }
             }
 
-            const result = {};
+            let result = {};
             result.jobsFound = jobsFound;
-            result.nextPages = nextPages;
 
             await browser.close();
             resolve(result);
