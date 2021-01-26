@@ -42,8 +42,8 @@ app.use(express.static(path.join(__dirname, "..", "client", "public")));
 app.post("/indeed-search", (req, res) => {
     const { userInputJob, userInputCity } = req.body;
     getJobtitleAndLink(userInputJob, userInputCity)
-        .then(({ jobsFound, numOfNextPages }) => {
-            console.log("numOfNextPages: ", numOfNextPages);
+        .then(({ jobsFound, pagesObj }) => {
+            console.log("pagesObj: ", pagesObj);
             res.json({ jobs: jobsFound });
         })
         .catch((err) => {

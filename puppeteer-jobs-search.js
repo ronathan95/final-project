@@ -32,6 +32,7 @@ module.exports.getJobtitleAndLink = function (job, city) {
             const page = await browser.newPage();
             await page.waitFor(500);
             await page.goto(indeedUrl, { waitUntil: "networkidle2" });
+            await page.screenshot({ path: "1.png" });
             jobsFound = await page.evaluate(() => {
                 // getting jobs titels and links from 1st page
                 let jobTitles = document.querySelectorAll(".title > a");
@@ -53,14 +54,8 @@ module.exports.getJobtitleAndLink = function (job, city) {
 
             /////////// checking for more pages with results ///////////
 
-            // let numOfNextPages = await page.evaluate(() => {
-            //     let nextPagesBtns = document.querySelectorAll(".pn");
-            //     return nextPagesBtns.length;
-            // });
-
-            let nextPagesBtns;
-            let numOfNextPages = await page.evaluate(() => {
-                nextPagesBtns = document.querySelectorAll(".pn");
+            const numOfNextPages = await page.evaluate(() => {
+                let nextPagesBtns = document.querySelectorAll(".pn");
                 let numOfPages = 0;
                 for (let i = 0; i < nextPagesBtns.length; i++) {
                     if (nextPagesBtns[i].innerText.length > 0) {
@@ -68,31 +63,65 @@ module.exports.getJobtitleAndLink = function (job, city) {
                     }
                 }
                 return numOfPages;
-            }); // ----> number of times to do the loop
+            });
+
+            // numOfNextPages ----> number of times to do the loop
             //".pagination-list > li:nth-child(2) > a > .pn" ----> starter selctor, number 2 is changing in the loop
 
-            ////////// clicking on page "li:nth-child(#)" //////////////
+            ////////// trying to get results from next pages //////////////
 
-            // await page.click(
-            //     ".pagination > .pagination-list > li:nth-child(2) > a > .pn"
-            // );
-            // await page.waitFor(5000);
-            // data = await page.evaluate(() => {
-            //     // getting jobs on page
-            //     let jobTitles = document.querySelectorAll(".title > a");
-            //     const jobTitlesList = [...jobTitles];
-            //     return {
-            //         secondPageResults: (jobsFound = jobTitlesList.map(
-            //             (title) => {
-            //                 return title.innerText;
-            //             }
-            //         )),
-            //     };
-            // });
+            let pagesObj = {};
+            for (let i = 2; i <= numOfNextPages; i++) {
+                pagesObj[i] = [];
+            }
+
+            if (numOfNextPages > 0) {
+                // on 1st page, clicking 2nd page
+                await page.click(
+                    `.pagination-list > li:nth-child(2) > a > .pn`
+                );
+                await page.waitFor(5000);
+                await page.screenshot({ path: "2.png" });
+                let data = await page.evaluate(() => {
+                    let jobTitles = document.querySelectorAll(".title > a");
+                    const jobTitlesList = [...jobTitles];
+                    const jobArray = jobTitlesList.map((title) => {
+                        return title.title;
+                    });
+                    return jobArray;
+                });
+                pagesObj[2] = data;
+            }
+
+            if (numOfNextPages > 1) {
+                // on 2nd page
+                for (
+                    let pageNum = 3;
+                    pageNum <= numOfNextPages + 1;
+                    pageNum++
+                ) {
+                    // to enter pageNum
+                    await page.click(
+                        `.pagination-list > li:nth-child(${
+                            pageNum + 1
+                        }) > a > .pn`
+                    );
+                    await page.waitFor(5000);
+                    let data = await page.evaluate(() => {
+                        let jobTitles = document.querySelectorAll(".title > a");
+                        const jobTitlesList = [...jobTitles];
+                        const jobArray = jobTitlesList.map((title) => {
+                            return title.title;
+                        });
+                        return jobArray;
+                    });
+                    pagesObj[pageNum] = data;
+                }
+            }
 
             const result = {};
             result.jobsFound = jobsFound;
-            result.numOfNextPages = numOfNextPages;
+            result.pagesObj = pagesObj;
 
             await browser.close();
             resolve(result);
