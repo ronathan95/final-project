@@ -58,12 +58,19 @@ module.exports.getJobtitleAndLink = function (job, city) {
 
             /////////// checking for more pages with results ///////////
 
-            let morePages = false;
+            let morePages = {};
             morePages = await page.evaluate(() => {
-                nextPagesBtns = document.querySelectorAll(".pn");
+                const nextPagesBtns = document.querySelectorAll(".pn");
                 const nextPagesBtnsList = [...nextPagesBtns];
                 if (nextPagesBtns.length > 0) {
-                    return { areThereMore: true, nextPagesBtnsList }; // ---> work on getting inner text to the nextPagesBtnsList key
+                    return {
+                        areThereMore: true,
+                        lastBtn:
+                            nextPagesBtnsList[nextPagesBtnsList.length - 1]
+                                .innerText,
+                    };
+                } else {
+                    return { areThereMore: false };
                 }
             });
 
@@ -73,46 +80,48 @@ module.exports.getJobtitleAndLink = function (job, city) {
 
             let nextPages = {};
 
-            // if (morePages.areThereMore) {
-            //     let start = 10;
-            //     let pageNum = 2;
-            //     while (
-            //         nextPagesBtns[nextPagesBtns.length - 1].innerText.length ==
-            //         0
-            //     ) {
-            //         const nextUrl = `https://de.indeed.com/Jobs?q=${job}&l=${city}&start=${start}`;
-            //         await page.goto(nextUrl, { waitUntil: "networkidle2" });
-            //         let jobsFoundOnSecondPage = await page.evaluate(() => {
-            //             let jobTitles = document.querySelectorAll(".title > a");
-            //             let jobCompany = document.querySelectorAll(".company");
-            //             const jobTitlesList = [...jobTitles];
-            //             const jobCompanyList = [...jobCompany];
-            //             const jobArray = jobTitlesList.map((title) => {
-            //                 return {
-            //                     title: title.title,
-            //                     link: title.href,
-            //                 };
-            //             });
-            //             for (let i = 0; i < jobArray.length; i++) {
-            //                 jobArray[i].company = jobCompanyList[i].innerText;
-            //             }
-            //             return jobArray;
-            //         });
-            //         nextPages[pageNum] = jobsFoundOnSecondPage;
+            if (morePages.areThereMore) {
+                let start = 10;
+                let pageNum = 2;
+                while (morePages.lastBtn.length == 0) {
+                    const nextUrl = `https://de.indeed.com/Jobs?q=${job}&l=${city}&start=${start}`;
+                    await page.goto(nextUrl, { waitUntil: "networkidle2" });
+                    let jobsFoundOnSecondPage = await page.evaluate(() => {
+                        let jobTitles = document.querySelectorAll(".title > a");
+                        let jobCompany = document.querySelectorAll(".company");
+                        const jobTitlesList = [...jobTitles];
+                        const jobCompanyList = [...jobCompany];
+                        const jobArray = jobTitlesList.map((title) => {
+                            return {
+                                title: title.title,
+                                link: title.href,
+                            };
+                        });
+                        for (let i = 0; i < jobArray.length; i++) {
+                            jobArray[i].company = jobCompanyList[i].innerText;
+                        }
+                        return jobArray;
+                    });
+                    nextPages[pageNum] = jobsFoundOnSecondPage;
 
-            //         let nextPagesBtns = await page.evaluate(() => {
-            //             return document.querySelectorAll(".pn");
-            //         });
+                    morePages = await page.evaluate(() => {
+                        const nextPagesBtns = document.querySelectorAll(".pn");
+                        const nextPagesBtnsList = [...nextPagesBtns];
+                        return {
+                            lastBtn:
+                                nextPagesBtnsList[nextPagesBtnsList.length - 1]
+                                    .innerText,
+                        };
+                    });
 
-            //         start = start + 10;
-            //         pageNum++;
-            //     }
-            // }
+                    start = start + 10;
+                    pageNum++;
+                }
+            }
 
             const result = {};
             result.jobsFound = jobsFound;
-            // result.nextPages = nextPages;
-            result.nextPagesBtns = morePages.nextPagesBtnsList;
+            result.nextPages = nextPages;
 
             await browser.close();
             resolve(result);
