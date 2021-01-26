@@ -32,7 +32,6 @@ module.exports.getJobtitleAndLink = function (job, city) {
             const page = await browser.newPage();
             await page.waitFor(500);
             await page.goto(indeedUrl, { waitUntil: "networkidle2" });
-            await page.screenshot({ path: "1.png" });
             jobsFound = await page.evaluate(() => {
                 // getting jobs titels and links from 1st page
                 let jobTitles = document.querySelectorAll(".title > a");
@@ -52,76 +51,68 @@ module.exports.getJobtitleAndLink = function (job, city) {
                 return jobArray;
             });
 
+            // let pagesObj = {};
+            // for (let i = 2; i <= numOfNextPages; i++) {
+            //     pagesObj[i] = [];
+            // }
+
             /////////// checking for more pages with results ///////////
 
-            const numOfNextPages = await page.evaluate(() => {
-                let nextPagesBtns = document.querySelectorAll(".pn");
-                let numOfPages = 0;
-                for (let i = 0; i < nextPagesBtns.length; i++) {
-                    if (nextPagesBtns[i].innerText.length > 0) {
-                        numOfPages++;
-                    }
+            let morePages = false;
+            morePages = await page.evaluate(() => {
+                nextPagesBtns = document.querySelectorAll(".pn");
+                const nextPagesBtnsList = [...nextPagesBtns];
+                if (nextPagesBtns.length > 0) {
+                    return { areThereMore: true, nextPagesBtnsList }; // ---> work on getting inner text to the nextPagesBtnsList key
                 }
-                return numOfPages;
             });
 
-            // numOfNextPages ----> number of times to do the loop
-            //".pagination-list > li:nth-child(2) > a > .pn" ----> starter selctor, number 2 is changing in the loop
+            // nextPagesBtns[nextPagesBtns.length-1].innerText ----> getting last btn and check value for number (page) / empty string (>)
 
             ////////// trying to get results from next pages //////////////
 
-            let pagesObj = {};
-            for (let i = 2; i <= numOfNextPages; i++) {
-                pagesObj[i] = [];
-            }
+            let nextPages = {};
 
-            if (numOfNextPages > 0) {
-                // on 1st page, clicking 2nd page
-                await page.click(
-                    `.pagination-list > li:nth-child(2) > a > .pn`
-                );
-                await page.waitFor(5000);
-                await page.screenshot({ path: "2.png" });
-                let data = await page.evaluate(() => {
-                    let jobTitles = document.querySelectorAll(".title > a");
-                    const jobTitlesList = [...jobTitles];
-                    const jobArray = jobTitlesList.map((title) => {
-                        return title.title;
-                    });
-                    return jobArray;
-                });
-                pagesObj[2] = data;
-            }
+            // if (morePages.areThereMore) {
+            //     let start = 10;
+            //     let pageNum = 2;
+            //     while (
+            //         nextPagesBtns[nextPagesBtns.length - 1].innerText.length ==
+            //         0
+            //     ) {
+            //         const nextUrl = `https://de.indeed.com/Jobs?q=${job}&l=${city}&start=${start}`;
+            //         await page.goto(nextUrl, { waitUntil: "networkidle2" });
+            //         let jobsFoundOnSecondPage = await page.evaluate(() => {
+            //             let jobTitles = document.querySelectorAll(".title > a");
+            //             let jobCompany = document.querySelectorAll(".company");
+            //             const jobTitlesList = [...jobTitles];
+            //             const jobCompanyList = [...jobCompany];
+            //             const jobArray = jobTitlesList.map((title) => {
+            //                 return {
+            //                     title: title.title,
+            //                     link: title.href,
+            //                 };
+            //             });
+            //             for (let i = 0; i < jobArray.length; i++) {
+            //                 jobArray[i].company = jobCompanyList[i].innerText;
+            //             }
+            //             return jobArray;
+            //         });
+            //         nextPages[pageNum] = jobsFoundOnSecondPage;
 
-            if (numOfNextPages > 1) {
-                // on 2nd page
-                for (
-                    let pageNum = 3;
-                    pageNum <= numOfNextPages + 1;
-                    pageNum++
-                ) {
-                    // to enter pageNum
-                    await page.click(
-                        `.pagination-list > li:nth-child(${
-                            pageNum + 1
-                        }) > a > .pn`
-                    );
-                    await page.waitFor(5000);
-                    let data = await page.evaluate(() => {
-                        let jobTitles = document.querySelectorAll(".title > a");
-                        const jobTitlesList = [...jobTitles];
-                        const jobArray = jobTitlesList.map((title) => {
-                            return title.title;
-                        });
-                        return jobArray;
-                    });
-                    pagesObj[pageNum] = data;
-                }
-            }
+            //         let nextPagesBtns = await page.evaluate(() => {
+            //             return document.querySelectorAll(".pn");
+            //         });
+
+            //         start = start + 10;
+            //         pageNum++;
+            //     }
+            // }
 
             const result = {};
             result.jobsFound = jobsFound;
-            result.pagesObj = pagesObj;
+            // result.nextPages = nextPages;
+            result.nextPagesBtns = morePages.nextPagesBtnsList;
 
             await browser.close();
             resolve(result);
