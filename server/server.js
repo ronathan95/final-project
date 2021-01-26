@@ -41,10 +41,10 @@ app.use(express.static(path.join(__dirname, "..", "client", "public")));
 
 app.post("/indeed-search", (req, res) => {
     const { userInputJob, userInputCity } = req.body;
-    let jobs = [];
     getJobtitleAndLink(userInputJob, userInputCity)
-        .then((jobs) => {
-            res.json({ jobs });
+        .then(({ jobsFound, numOfNextPages }) => {
+            console.log("numOfNextPages: ", numOfNextPages);
+            res.json({ jobs: jobsFound });
         })
         .catch((err) => {
             console.error("error in getJobtitleAndLink: ", err);

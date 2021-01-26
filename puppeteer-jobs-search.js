@@ -37,10 +37,10 @@ module.exports.getJobtitleAndLink = function (job, city) {
                 let jobTitles = document.querySelectorAll(".title > a");
                 let jobCompany = document.querySelectorAll(".company");
                 const jobTitlesList = [...jobTitles];
-                const jobCompanyList = [...jobCompany]; // ----> needs to be used to get job's company (its innerText)
+                const jobCompanyList = [...jobCompany];
                 const jobArray = jobTitlesList.map((title) => {
                     return {
-                        title: title.innerText,
+                        title: title.title,
                         link: title.href,
                     };
                 });
@@ -49,12 +49,6 @@ module.exports.getJobtitleAndLink = function (job, city) {
                     jobArray[i].company = jobCompanyList[i].innerText;
                 }
                 return jobArray;
-                // return jobTitlesList.map((title) => {
-                //     return {
-                //         title: title.innerText,
-                //         link: title.href,
-                //     };
-                // });
             });
 
             /////////// checking for more pages with results ///////////
@@ -63,6 +57,19 @@ module.exports.getJobtitleAndLink = function (job, city) {
             //     let nextPagesBtns = document.querySelectorAll(".pn");
             //     return nextPagesBtns.length;
             // });
+
+            let nextPagesBtns;
+            let numOfNextPages = await page.evaluate(() => {
+                nextPagesBtns = document.querySelectorAll(".pn");
+                let numOfPages = 0;
+                for (let i = 0; i < nextPagesBtns.length; i++) {
+                    if (nextPagesBtns[i].innerText.length > 0) {
+                        numOfPages++;
+                    }
+                }
+                return numOfPages;
+            }); // ----> number of times to do the loop
+            //".pagination-list > li:nth-child(2) > a > .pn" ----> starter selctor, number 2 is changing in the loop
 
             ////////// clicking on page "li:nth-child(#)" //////////////
 
@@ -83,8 +90,12 @@ module.exports.getJobtitleAndLink = function (job, city) {
             //     };
             // });
 
+            const result = {};
+            result.jobsFound = jobsFound;
+            result.numOfNextPages = numOfNextPages;
+
             await browser.close();
-            resolve(jobsFound);
+            resolve(result);
         } catch (error) {
             console.log("error: ", error);
             reject(error);

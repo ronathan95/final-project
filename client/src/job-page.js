@@ -10,15 +10,12 @@ export default function JobPage() {
 
     useEffect(() => {
         jobId = window.location.pathname.slice(5);
-        jobObj = jobsResults.filter((jobObject) => jobObject.id == jobId);
-        jobDescription = jobObj[0].description;
-        jobtitle = jobObj[0].title;
-        jobCompany = jobObj[0].company;
+        jobObj = jobsResults.filter((jobObject) => jobObject.id == jobId)[0];
         setDescription({
-            __html: jobDescription,
+            __html: jobObj.description,
         });
-        setTitle(jobtitle);
-        setCompany(jobCompany);
+        setTitle(jobObj.title);
+        setCompany(jobObj.company);
     }, [jobsResults]);
 
     return (
