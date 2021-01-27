@@ -12,16 +12,17 @@ export async function updateUserInputCity(userInputCity) {
     };
 }
 
-export async function updateJobResults(jobsResultsArray) {
+export async function updateJobResults(jobsResultsObject) {
     return {
         type: "UPDATE_JOBS_RESULTS",
-        jobsResultsArray: jobsResultsArray,
+        jobsResultsObject: jobsResultsObject,
     };
 }
 
-export async function updateJobDescription(jobId, description) {
+export async function updateJobDescription(jobPage, jobId, description) {
     return {
         type: "UPDATE_JOB_DESCRIPTION",
+        jobPage: jobPage,
         jobId: jobId,
         jobsDescription: description,
     };

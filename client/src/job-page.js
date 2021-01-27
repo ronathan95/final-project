@@ -2,15 +2,18 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 
 export default function JobPage() {
-    const jobsResults = useSelector((state) => state && state.jobsResultsArray);
+    const jobsResults = useSelector(
+        (state) => state && state.jobsResultsObject
+    );
     const [title, setTitle] = useState("");
     const [company, setCompany] = useState("");
     const [description, setDescription] = useState({ __html: "" });
-    let jobId, jobObj, jobDescription, jobtitle, jobCompany;
+    let jobId, jobObj;
 
     useEffect(() => {
         jobId = window.location.pathname.slice(5);
-        jobObj = jobsResults.filter((jobObject) => jobObject.id == jobId)[0];
+        console.log("jobsResults[1]: ", jobsResults[1]);
+        jobObj = jobsResults[1].filter((jobObject) => jobObject.id == jobId)[0];
         setDescription({
             __html: jobObj.description,
         });

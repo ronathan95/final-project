@@ -12,7 +12,7 @@ export default function Search() {
     const dispatch = useDispatch();
     const userInputJob = useSelector((state) => state && state.userInputJob);
     const userInputCity = useSelector((state) => state && state.userInputCity);
-    const jobResults = useSelector((state) => state && state.jobsResultsArray);
+    const jobResults = useSelector((state) => state && state.jobsResultsObject);
 
     const handleUserInputJob = (e) => {
         dispatch(updateUserInputJob(e.target.value));
@@ -36,7 +36,7 @@ export default function Search() {
         axios
             .get(`/get-job-description/${encodeURIComponent(link)}`)
             .then(({ data }) => {
-                dispatch(updateJobDescription(jobId, data.description));
+                dispatch(updateJobDescription(1, jobId, data.description));
             })
             .catch((err) => {
                 console.error(
@@ -61,7 +61,7 @@ export default function Search() {
             />
             <button onClick={handleSearch}>Search</button>
             {jobResults &&
-                jobResults.map((job) => (
+                jobResults[1].map((job) => (
                     <div key={job.id}>
                         <Link
                             onClick={() => getJobDescription(job.id, job.link)}

@@ -16,21 +16,23 @@ export default function reducer(state = {}, action) {
     if (action.type == "UPDATE_JOBS_RESULTS") {
         state = {
             ...state,
-            jobsResultsArray: action.jobsResultsArray,
+            jobsResultsObject: action.jobsResultsObject,
         };
     }
 
     if (action.type == "UPDATE_JOB_DESCRIPTION") {
         state = {
             ...state,
-            jobsResultsArray: state.jobsResultsArray.map((jobObject) => {
-                jobObject.id == action.jobId &&
-                    (jobObject = {
-                        ...jobObject,
-                        description: action.jobsDescription,
-                    });
-                return jobObject;
-            }),
+            jobsResultsObject: state.jobsResultsObject[action.jobPage].map(
+                (jobObject) => {
+                    jobObject.id == action.jobId &&
+                        (jobObject = {
+                            ...jobObject,
+                            description: action.jobsDescription,
+                        });
+                    return jobObject;
+                }
+            ),
         };
     }
 

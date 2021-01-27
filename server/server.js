@@ -43,8 +43,7 @@ app.post("/indeed-search", (req, res) => {
     const { userInputJob, userInputCity } = req.body;
     getJobtitleAndLink(userInputJob, userInputCity)
         .then(({ jobsFound }) => {
-            console.log("jobsFound: ", jobsFound);
-            // res.json({ jobs: jobsFound });
+            res.json({ jobs: jobsFound });
         })
         .catch((err) => {
             console.error("error in getJobtitleAndLink: ", err);
