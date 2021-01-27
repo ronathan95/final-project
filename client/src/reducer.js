@@ -21,7 +21,7 @@ export default function reducer(state = {}, action) {
     }
 
     if (action.type == "UPDATE_JOB_DESCRIPTION") {
-        const arrayIndex = state.jobsResultsObject[action.jobPage].indexOf(
+        const arrayIndex = state.jobsResultsObject[action.jobPage].findIndex(
             (job) => job.id === action.jobId
         );
         const updatedArray = state.jobsResultsObject[action.jobPage].map(
@@ -36,6 +36,7 @@ export default function reducer(state = {}, action) {
                 }
             }
         );
+
         state = {
             ...state,
             jobsResultsObject: {
