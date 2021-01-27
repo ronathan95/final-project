@@ -12,7 +12,6 @@ export default function JobPage() {
 
     useEffect(() => {
         jobId = window.location.pathname.slice(5);
-        console.log("jobsResults[1]: ", jobsResults[1]);
         jobObj = jobsResults[1].filter((jobObject) => jobObject.id == jobId)[0];
         setDescription({
             __html: jobObj.description,

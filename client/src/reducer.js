@@ -21,18 +21,27 @@ export default function reducer(state = {}, action) {
     }
 
     if (action.type == "UPDATE_JOB_DESCRIPTION") {
+        const arrayIndex = state.jobsResultsObject[action.jobPage].indexOf(
+            (job) => job.id === action.jobId
+        );
+        const updatedArray = state.jobsResultsObject[action.jobPage].map(
+            (job, idx) => {
+                if (idx === arrayIndex) {
+                    return {
+                        ...job,
+                        description: action.jobsDescription,
+                    };
+                } else {
+                    return job;
+                }
+            }
+        );
         state = {
             ...state,
-            jobsResultsObject: state.jobsResultsObject[action.jobPage].map(
-                (jobObject) => {
-                    jobObject.id == action.jobId &&
-                        (jobObject = {
-                            ...jobObject,
-                            description: action.jobsDescription,
-                        });
-                    return jobObject;
-                }
-            ),
+            jobsResultsObject: {
+                ...state.jobsResultsObject,
+                [action.jobPage]: updatedArray,
+            },
         };
     }
 
