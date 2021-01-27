@@ -50,10 +50,24 @@ export default function reducer(state = initialState, action) {
         };
     }
 
-    if (action.type == "UPDATE_CURRENT_PAGE") {
+    if (action.type == "INCREASE_CURRENT_PAGE") {
         state = {
             ...state,
             currentPage: state.currentPage + 1,
+        };
+    }
+
+    if (action.type == "RESET_CURRENT_PAGE") {
+        state = {
+            ...state,
+            currentPage: 1,
+        };
+    }
+
+    if (action.type == "DECREASE_CURRENT_PAGE") {
+        state = {
+            ...state,
+            currentPage: state.currentPage - 1,
         };
     }
 

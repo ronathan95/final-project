@@ -28,8 +28,20 @@ export async function updateJobDescription(jobPage, jobId, description) {
     };
 }
 
-export async function updateCurrentPage() {
+export async function increaseCurrentPage() {
     return {
-        type: "UPDATE_CURRENT_PAGE",
+        type: "INCREASE_CURRENT_PAGE",
+    };
+}
+
+export async function resetCurrentPage() {
+    return {
+        type: "RESET_CURRENT_PAGE",
+    };
+}
+
+export async function decreaseCurrentPage() {
+    return {
+        type: "DECREASE_CURRENT_PAGE",
     };
 }

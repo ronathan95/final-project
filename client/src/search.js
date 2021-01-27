@@ -6,7 +6,9 @@ import {
     updateUserInputCity,
     updateJobResults,
     updateJobDescription,
-    updateCurrentPage,
+    increaseCurrentPage,
+    resetCurrentPage,
+    decreaseCurrentPage,
 } from "./actions";
 import axios from "./axios";
 
@@ -25,9 +27,6 @@ export default function Search() {
         }
     }, [jobResults]);
 
-    console.log("currentPage: ", currentPage);
-    console.log("numOfPages: ", numOfPages);
-
     const handleUserInputJob = (e) => {
         dispatch(updateUserInputJob(e.target.value));
     };
@@ -36,9 +35,11 @@ export default function Search() {
     };
 
     const handleSearch = () => {
+        dispatch(resetCurrentPage());
         axios
             .post("/indeed-search", { userInputJob, userInputCity })
             .then(({ data }) => {
+                console.log("data.jobs: ", data.jobs);
                 dispatch(updateJobResults(data.jobs));
             })
             .catch((err) => {
@@ -90,10 +91,19 @@ export default function Search() {
             {currentPage != numOfPages && (
                 <button
                     onClick={() => {
-                        dispatch(updateCurrentPage());
+                        dispatch(increaseCurrentPage());
                     }}
                 >
                     next
+                </button>
+            )}
+            {currentPage != 1 && (
+                <button
+                    onClick={() => {
+                        dispatch(decreaseCurrentPage());
+                    }}
+                >
+                    previous
                 </button>
             )}
         </div>
