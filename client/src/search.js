@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -13,6 +14,17 @@ export default function Search() {
     const userInputJob = useSelector((state) => state && state.userInputJob);
     const userInputCity = useSelector((state) => state && state.userInputCity);
     const jobResults = useSelector((state) => state && state.jobsResultsObject);
+
+    let numOfPages = 1;
+    let currentPage = 1;
+
+    useEffect(() => {
+        if (jobResults) {
+            numOfPages = Object.keys(jobResults).length;
+        }
+        console.log("numOfPages: ", numOfPages);
+        console.log("currentPage: ", currentPage);
+    }, [jobResults]);
 
     const handleUserInputJob = (e) => {
         dispatch(updateUserInputJob(e.target.value));
@@ -36,7 +48,9 @@ export default function Search() {
         axios
             .get(`/get-job-description/${encodeURIComponent(link)}`)
             .then(({ data }) => {
-                dispatch(updateJobDescription(1, jobId, data.description));
+                dispatch(
+                    updateJobDescription(currentPage, jobId, data.description)
+                );
             })
             .catch((err) => {
                 console.error(
@@ -61,7 +75,7 @@ export default function Search() {
             />
             <button onClick={handleSearch}>Search</button>
             {jobResults &&
-                jobResults[1].map((job) => (
+                jobResults[currentPage].map((job) => (
                     <div key={job.id}>
                         <Link
                             onClick={() => getJobDescription(job.id, job.link)}
@@ -71,6 +85,13 @@ export default function Search() {
                         </Link>
                     </div>
                 ))}
+            <button
+                onClick={() => {
+                    currentPage++;
+                }}
+            >
+                {currentPage != numOfPages ? "next" : ""}
+            </button>
         </div>
     );
 }
