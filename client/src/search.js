@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -6,6 +6,7 @@ import {
     updateUserInputCity,
     updateJobResults,
     updateJobDescription,
+    updateCurrentPage,
 } from "./actions";
 import axios from "./axios";
 
@@ -14,17 +15,18 @@ export default function Search() {
     const userInputJob = useSelector((state) => state && state.userInputJob);
     const userInputCity = useSelector((state) => state && state.userInputCity);
     const jobResults = useSelector((state) => state && state.jobsResultsObject);
+    const currentPage = useSelector((state) => state && state.currentPage);
 
-    let numOfPages = 1;
-    let currentPage = 1;
+    const [numOfPages, setNumOfPages] = useState(1);
 
     useEffect(() => {
         if (jobResults) {
-            numOfPages = Object.keys(jobResults).length;
+            setNumOfPages(Object.keys(jobResults).length);
         }
-        console.log("numOfPages: ", numOfPages);
-        console.log("currentPage: ", currentPage);
     }, [jobResults]);
+
+    console.log("currentPage: ", currentPage);
+    console.log("numOfPages: ", numOfPages);
 
     const handleUserInputJob = (e) => {
         dispatch(updateUserInputJob(e.target.value));
@@ -85,13 +87,15 @@ export default function Search() {
                         </Link>
                     </div>
                 ))}
-            <button
-                onClick={() => {
-                    currentPage++;
-                }}
-            >
-                {currentPage != numOfPages ? "next" : ""}
-            </button>
+            {currentPage != numOfPages && (
+                <button
+                    onClick={() => {
+                        dispatch(updateCurrentPage());
+                    }}
+                >
+                    next
+                </button>
+            )}
         </div>
     );
 }

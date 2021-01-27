@@ -1,4 +1,8 @@
-export default function reducer(state = {}, action) {
+const initialState = {
+    currentPage: 1,
+};
+
+export default function reducer(state = initialState, action) {
     if (action.type == "UPDATE_USER_INPUT_JOB") {
         state = {
             ...state,
@@ -43,6 +47,13 @@ export default function reducer(state = {}, action) {
                 ...state.jobsResultsObject,
                 [action.jobPage]: updatedArray,
             },
+        };
+    }
+
+    if (action.type == "UPDATE_CURRENT_PAGE") {
+        state = {
+            ...state,
+            currentPage: state.currentPage + 1,
         };
     }
 

@@ -27,3 +27,9 @@ export async function updateJobDescription(jobPage, jobId, description) {
         jobsDescription: description,
     };
 }
+
+export async function updateCurrentPage() {
+    return {
+        type: "UPDATE_CURRENT_PAGE",
+    };
+}
