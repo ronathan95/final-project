@@ -4,7 +4,7 @@ const pluginStealth = require("puppeteer-extra-plugin-stealth");
 const sanitizeHtml = require("sanitize-html");
 
 let jobsFound = {};
-let lastId = 0;
+let id = 1;
 
 async function puppeteerConfig() {
     let browser;
@@ -46,14 +46,12 @@ module.exports.getJobtitleAndLink = function (job, city) {
                     };
                 });
                 for (let i = 0; i < jobArray.length; i++) {
-                    jobArray[i].id = i + 1;
+                    jobArray[i].id = id;
                     jobArray[i].company = jobCompanyList[i].innerText;
+                    id++;
                 }
                 return jobArray;
             });
-            const one = 1;
-            jobsFound[one] = firstPageArray;
-            lastId = jobsFound[one][jobsFound[one].length - 1].id;
 
             /////////// checking for more pages with results ///////////
 
@@ -93,9 +91,9 @@ module.exports.getJobtitleAndLink = function (job, city) {
                             };
                         });
                         for (let i = 0; i < jobArray.length; i++) {
-                            // jobArray[i].id = lastId + 1;
+                            jobArray[i].id = id;
                             jobArray[i].company = jobCompanyList[i].innerText;
-                            // lastId++;
+                            id++;
                         }
                         return jobArray;
                     });
