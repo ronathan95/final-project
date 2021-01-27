@@ -33,7 +33,7 @@ module.exports.getJobtitleAndLink = function (job, city) {
             const page = await browser.newPage();
             await page.waitFor(500);
             await page.goto(indeedUrl, { waitUntil: "networkidle2" });
-            firstPageArray = await page.evaluate(() => {
+            firstPageArray = await page.evaluate((id) => {
                 // getting jobs titels and links from 1st page
                 let jobTitles = document.querySelectorAll(".title > a");
                 let jobCompany = document.querySelectorAll(".company");
@@ -50,8 +50,14 @@ module.exports.getJobtitleAndLink = function (job, city) {
                     jobArray[i].company = jobCompanyList[i].innerText;
                     id++;
                 }
-                return jobArray;
-            });
+                return {
+                    jobArray,
+                    lastId: id,
+                };
+            }, id);
+
+            jobsFound[1] = firstPageArray.jobArray;
+            id = firstPageArray.lastId;
 
             /////////// checking for more pages with results ///////////
 
@@ -79,7 +85,7 @@ module.exports.getJobtitleAndLink = function (job, city) {
                 while (morePages.lastBtn.length == 0) {
                     const nextUrl = `https://de.indeed.com/Jobs?q=${job}&l=${city}&start=${start}`;
                     await page.goto(nextUrl, { waitUntil: "networkidle2" });
-                    let jobsFoundOnSecondPage = await page.evaluate(() => {
+                    let jobsFoundOnSecondPage = await page.evaluate((id) => {
                         let jobTitles = document.querySelectorAll(".title > a");
                         let jobCompany = document.querySelectorAll(".company");
                         const jobTitlesList = [...jobTitles];
@@ -95,9 +101,13 @@ module.exports.getJobtitleAndLink = function (job, city) {
                             jobArray[i].company = jobCompanyList[i].innerText;
                             id++;
                         }
-                        return jobArray;
-                    });
-                    jobsFound[pageNum] = jobsFoundOnSecondPage;
+                        return {
+                            jobArray,
+                            lastId: id,
+                        };
+                    }, id);
+                    jobsFound[pageNum] = jobsFoundOnSecondPage.jobArray;
+                    id = jobsFoundOnSecondPage.lastId;
 
                     morePages = await page.evaluate(() => {
                         const nextPagesBtns = document.querySelectorAll(".pn");
