@@ -27,7 +27,7 @@ export default function reducer(state = initialState, action) {
     if (action.type == "RESET_JOBS_RESULTS") {
         state = {
             ...state,
-            jobsResultsObject: {},
+            jobsResultsObject: null,
         };
     }
 

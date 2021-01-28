@@ -130,7 +130,7 @@ module.exports.getJobtitleAndLink = function (job, city) {
             await browser.close();
             resolve(result);
         } catch (error) {
-            console.log("error: ", error);
+            console.error("error in getJobtitleAndLink: ", error);
             reject(error);
         }
     });
@@ -154,7 +154,7 @@ module.exports.getJobDescription = function (link) {
             await browser.close();
             resolve(cleanDescription);
         } catch (error) {
-            console.log("error: ", error);
+            console.error("error in getJobDescription: ", error);
             reject(error);
         }
     });

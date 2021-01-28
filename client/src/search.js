@@ -13,7 +13,14 @@ import {
 } from "./actions";
 import axios from "./axios";
 
-import CircularProgress from "@material-ui/core/CircularProgress";
+import {
+    CircularProgress,
+    Typography,
+    Input,
+    Button,
+    Icon,
+    Paper,
+} from "@material-ui/core";
 
 export default function Search() {
     const dispatch = useDispatch();
@@ -47,6 +54,7 @@ export default function Search() {
             .post("/indeed-search", { userInputJob, userInputCity })
             .then(({ data }) => {
                 setShowProgressSpinner(false);
+                console.log("data.jobs: ", data.jobs);
                 dispatch(updateJobResults(data.jobs));
             })
             .catch((err) => {
@@ -71,49 +79,72 @@ export default function Search() {
     };
 
     return (
-        <div>
-            <h1>Search page</h1>
-            <input
+        <div className="search">
+            <Typography variant="h3">Search</Typography>
+
+            <Input
+                className="input"
                 onChange={handleUserInputJob}
                 type="text"
                 placeholder="enter a job name"
             />
-            <input
+            <Input
+                className="input"
                 onChange={handleUserInputCity}
                 type="text"
                 placeholder="enter a city"
             />
-            <button onClick={handleSearch}>Search</button>
+
+            <Button
+                onClick={handleSearch}
+                variant="contained"
+                color="primary"
+                endIcon={<Icon>send</Icon>}
+            >
+                Search
+            </Button>
+
+            <br />
+
             {showProgressSpinner && <CircularProgress />}
             {jobResults &&
                 jobResults[currentPage] &&
                 jobResults[currentPage].map((job) => (
-                    <div key={job.id}>
+                    <Paper className="paper" key={job.id}>
                         <Link
                             onClick={() => getJobDescription(job.id, job.link)}
                             to={"/job/" + job.id}
                         >
-                            {job.title} at {job.company}
+                            <Typography variant="h6">{job.title}</Typography>
                         </Link>
-                    </div>
+                        <Typography variant="subtitle1">
+                            {job.company}
+                        </Typography>
+                    </Paper>
                 ))}
             {currentPage != numOfPages && numOfPages != 0 && (
-                <button
+                <Button
+                    className="btn"
+                    variant="contained"
+                    color="primary"
                     onClick={() => {
                         dispatch(increaseCurrentPage());
                     }}
                 >
                     next
-                </button>
+                </Button>
             )}
             {currentPage != 1 && (
-                <button
+                <Button
+                    className="btn"
+                    variant="contained"
+                    color="primary"
                     onClick={() => {
                         dispatch(decreaseCurrentPage());
                     }}
                 >
                     previous
-                </button>
+                </Button>
             )}
         </div>
     );
