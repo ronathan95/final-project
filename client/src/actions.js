@@ -45,3 +45,9 @@ export async function decreaseCurrentPage() {
         type: "DECREASE_CURRENT_PAGE",
     };
 }
+
+export async function resetJobResults() {
+    return {
+        type: "RESET_JOBS_RESULTS",
+    };
+}

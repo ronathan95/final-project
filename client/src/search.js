@@ -9,8 +9,11 @@ import {
     increaseCurrentPage,
     resetCurrentPage,
     decreaseCurrentPage,
+    resetJobResults,
 } from "./actions";
 import axios from "./axios";
+
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 export default function Search() {
     const dispatch = useDispatch();
@@ -20,6 +23,8 @@ export default function Search() {
     const currentPage = useSelector((state) => state && state.currentPage);
 
     const [numOfPages, setNumOfPages] = useState(1);
+
+    const [showProgressSpinner, setShowProgressSpinner] = useState(false);
 
     useEffect(() => {
         if (jobResults) {
@@ -35,11 +40,13 @@ export default function Search() {
     };
 
     const handleSearch = () => {
+        dispatch(resetJobResults());
         dispatch(resetCurrentPage());
+        setShowProgressSpinner(true);
         axios
             .post("/indeed-search", { userInputJob, userInputCity })
             .then(({ data }) => {
-                console.log("data.jobs: ", data.jobs);
+                setShowProgressSpinner(false);
                 dispatch(updateJobResults(data.jobs));
             })
             .catch((err) => {
@@ -77,7 +84,9 @@ export default function Search() {
                 placeholder="enter a city"
             />
             <button onClick={handleSearch}>Search</button>
+            {showProgressSpinner && <CircularProgress />}
             {jobResults &&
+                jobResults[currentPage] &&
                 jobResults[currentPage].map((job) => (
                     <div key={job.id}>
                         <Link
@@ -88,7 +97,7 @@ export default function Search() {
                         </Link>
                     </div>
                 ))}
-            {currentPage != numOfPages && (
+            {currentPage != numOfPages && numOfPages != 0 && (
                 <button
                     onClick={() => {
                         dispatch(increaseCurrentPage());

@@ -24,6 +24,13 @@ export default function reducer(state = initialState, action) {
         };
     }
 
+    if (action.type == "RESET_JOBS_RESULTS") {
+        state = {
+            ...state,
+            jobsResultsObject: {},
+        };
+    }
+
     if (action.type == "UPDATE_JOB_DESCRIPTION") {
         const arrayIndex = state.jobsResultsObject[action.jobPage].findIndex(
             (job) => job.id === action.jobId
