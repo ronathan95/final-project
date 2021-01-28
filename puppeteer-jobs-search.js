@@ -3,9 +3,6 @@ const pluginStealth = require("puppeteer-extra-plugin-stealth");
 
 const sanitizeHtml = require("sanitize-html");
 
-let jobsFound = {};
-let id = 1;
-
 async function puppeteerConfig() {
     let browser;
     puppeteerExtra.use(pluginStealth());
@@ -26,6 +23,8 @@ async function puppeteerConfig() {
 
 module.exports.getJobtitleAndLink = function (job, city) {
     return new Promise(async (resolve, reject) => {
+        let jobsFound = {};
+        let id = 1;
         const indeedUrl = `https://de.indeed.com/Jobs?q=${job}&l=${city}`;
         let browser;
         try {
