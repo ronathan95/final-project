@@ -3,6 +3,13 @@ const pluginStealth = require("puppeteer-extra-plugin-stealth");
 
 const sanitizeHtml = require("sanitize-html");
 
+let secrets;
+if (process.env.NODE_ENV == "production") {
+    secrets = process.env;
+} else {
+    secrets = require("./secrets");
+}
+
 async function puppeteerConfig() {
     let browser;
     puppeteerExtra.use(pluginStealth());
@@ -152,6 +159,46 @@ module.exports.getJobDescription = function (link) {
             const cleanDescription = sanitizeHtml(dirtyDescription);
             await browser.close();
             resolve(cleanDescription);
+        } catch (error) {
+            console.error("error in getJobDescription: ", error);
+            reject(error);
+        }
+    });
+};
+
+module.exports.glassDoor = function (company) {
+    return new Promise(async (resolve, reject) => {
+        let browser;
+        const glassDoorUrl =
+            "https://www.glassdoor.de/member/home/companies.htm";
+        try {
+            browser = await puppeteerConfig();
+            const page = await browser.newPage();
+            await page.waitFor(500);
+            await page.goto(glassDoorUrl, { waitUntil: "networkidle2" });
+            await page.click("#onetrust-accept-btn-handler");
+            await page.type("#userEmail", secrets.GLASSDOOR_EMAIL);
+            await page.type("#userPassword", secrets.GLASSDOOR_PW);
+            await page.click(".gd-ui-button");
+            await page.waitForNavigation();
+
+            await page.setViewport({ width: 1000, height: 657 });
+            await page.type(
+                "#scBar .d-flex.col-6.p-0.search__SearchStyles__searchKeywordContainer input",
+                company
+            );
+            await page.click(".gd-ui-button");
+            await page.waitForNavigation();
+
+            const score = await page.evaluate(() => {
+                const scoreDiv = document.querySelector(
+                    "#EIOverviewContainer > .css-ifw56c > .mt-std > .mb-md-md > .mr-xsm"
+                );
+                return scoreDiv.innerText;
+            });
+
+            await browser.close();
+            resolve(score);
         } catch (error) {
             console.error("error in getJobDescription: ", error);
             reject(error);

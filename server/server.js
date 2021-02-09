@@ -8,6 +8,7 @@ const path = require("path");
 const {
     getJobtitleAndLink,
     getJobDescription,
+    glassDoor,
 } = require("../puppeteer-jobs-search");
 
 require("events").EventEmitter.defaultMaxListeners = 15;
@@ -40,13 +41,21 @@ app.use(express.static(path.join(__dirname, "..", "client", "public")));
 /////////////////////////////////////////
 
 app.post("/indeed-search", (req, res) => {
-    const { userInputJob, userInputCity } = req.body;
-    getJobtitleAndLink(userInputJob, userInputCity)
-        .then(({ jobsFound }) => {
-            res.json({ jobs: jobsFound });
+    // const { userInputJob, userInputCity } = req.body;
+    // getJobtitleAndLink(userInputJob, userInputCity)
+    //     .then(({ jobsFound }) => {
+    //         res.json({ jobs: jobsFound });
+    //     })
+    //     .catch((err) => {
+    //         console.error("error in getJobtitleAndLink: ", err);
+    //     });
+
+    glassDoor("klarna")
+        .then((score) => {
+            console.log("score: ", score);
         })
         .catch((err) => {
-            console.error("error in getJobtitleAndLink: ", err);
+            console.error("error in glassDoor: ", err);
         });
 });
 
