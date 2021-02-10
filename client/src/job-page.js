@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+
+import axios from "./axios";
 
 import {
     CircularProgress,
@@ -43,6 +44,8 @@ export default function JobPage() {
     let jobId, jobObj;
 
     const [showProgressSpinner, setShowProgressSpinner] = useState(true);
+    const [score, setScore] = useState("");
+    const [showScoreSpinner, setShowScoreSpinner] = useState(true);
 
     useEffect(() => {
         jobId = window.location.pathname.slice(5);
@@ -56,6 +59,23 @@ export default function JobPage() {
         setCompany(jobObj.company);
         setLink(jobObj.link);
         setShowProgressSpinner(!jobObj.description);
+        axios
+            .get(`/get-company-score/${company}`)
+            .then(({ data }) => {
+                if (data.score) {
+                    setScore(data.score);
+                    setShowScoreSpinner(!data.score);
+                } else if (data.score === false) {
+                    setScore("no result");
+                    setShowScoreSpinner(false);
+                }
+            })
+            .catch((err) => {
+                console.error(
+                    `error on axios.get(/get-company-score/${company}): `,
+                    err
+                );
+            });
     }, [jobsResults]);
 
     return (
@@ -67,6 +87,9 @@ export default function JobPage() {
                     </Typography>
                     <Typography className={classes.pos} color="textSecondary">
                         {company}
+                        <br />
+                        GlassDoor score:
+                        {showScoreSpinner && <CircularProgress />} {score}
                     </Typography>
                     <Typography variant="body2" component="p">
                         {showProgressSpinner && <CircularProgress />}

@@ -194,7 +194,11 @@ module.exports.glassDoor = function (company) {
                 const scoreDiv = document.querySelector(
                     "#EIOverviewContainer > .css-ifw56c > .mt-std > .mb-md-md > .mr-xsm"
                 );
-                return scoreDiv.innerText;
+                if (scoreDiv) {
+                    return scoreDiv.innerText;
+                } else {
+                    return false;
+                }
             });
 
             await browser.close();

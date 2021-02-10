@@ -41,21 +41,13 @@ app.use(express.static(path.join(__dirname, "..", "client", "public")));
 /////////////////////////////////////////
 
 app.post("/indeed-search", (req, res) => {
-    // const { userInputJob, userInputCity } = req.body;
-    // getJobtitleAndLink(userInputJob, userInputCity)
-    //     .then(({ jobsFound }) => {
-    //         res.json({ jobs: jobsFound });
-    //     })
-    //     .catch((err) => {
-    //         console.error("error in getJobtitleAndLink: ", err);
-    //     });
-
-    glassDoor("klarna")
-        .then((score) => {
-            console.log("score: ", score);
+    const { userInputJob, userInputCity } = req.body;
+    getJobtitleAndLink(userInputJob, userInputCity)
+        .then(({ jobsFound }) => {
+            res.json({ jobs: jobsFound });
         })
         .catch((err) => {
-            console.error("error in glassDoor: ", err);
+            console.error("error in getJobtitleAndLink: ", err);
         });
 });
 
@@ -67,6 +59,17 @@ app.get("/get-job-description/:link", (req, res) => {
         })
         .catch((err) => {
             console.error("error in getJobDescription: ", err);
+        });
+});
+
+app.get("/get-company-score/:company", (req, res) => {
+    const { company } = req.params;
+    glassDoor(company)
+        .then((score) => {
+            res.json({ score });
+        })
+        .catch((err) => {
+            console.error("error in glassDoor: ", err);
         });
 });
 

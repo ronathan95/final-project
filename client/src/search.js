@@ -54,7 +54,6 @@ export default function Search() {
             .post("/indeed-search", { userInputJob, userInputCity })
             .then(({ data }) => {
                 setShowProgressSpinner(false);
-                console.log("data.jobs: ", data.jobs);
                 dispatch(updateJobResults(data.jobs));
             })
             .catch((err) => {
