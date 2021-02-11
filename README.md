@@ -1,44 +1,7 @@
-<!-- PROJECT LOGO -->
-<p align="center">
-  <a href="https://github.com/ronathan95/final-project">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
-  </a>
-
-  <h3 align="center">Job Search</h3>
+  <h3 align="center">Job Search Engine</h3>
 
   <p align="center">
-    Using web scraping technic to get job search results from indeed and shows GlassDoor score, if exists, for each company
-    <br />
-    <a href="https://github.com/ronathan95/final-project"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/ronathan95/final-project">View Demo</a>
-    ·
-    <a href="https://github.com/ronathan95/final-project/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/ronathan95/final-project/issues">Request Feature</a>
-  </p>
-</p>
-
-<!-- TABLE OF CONTENTS -->
-<details open="open">
-  <summary><h2 style="display: inline-block">Table of Contents</h2></summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    </ol>
-</details>
+    Using web scraping technic to get job search results from indeed and shows GlassDoor score, if exists, for each company</p>
 
 <!-- ABOUT THE PROJECT -->
 
@@ -68,13 +31,13 @@ To get a local copy up and running follow these simple steps.
 
 -   Chromium - to be able to use Puppeteer
 
-    1. Remove Ubuntu chromium packages:
+1. Remove Ubuntu chromium packages:
 
     ```sh
     sudo apt remove chromium-browser chromium-browser-l10n chromium-codecs-ffmpeg-extra
     ```
 
-    2. Add Debian buster repository. Create a file (you might need to use sudo) _/etc/apt/sources.list.d/debian.list_ with the following content:
+2. Add Debian buster repository. Create a file (you might need to use sudo) _/etc/apt/sources.list.d/debian.list_ with the following content:
 
     ```sh
     deb http://ftp.debian.org/debian buster main
@@ -82,7 +45,7 @@ To get a local copy up and running follow these simple steps.
     deb http://ftp.debian.org/debian-security buster/updates main
     ```
 
-    3. Add the Debian signing keys:
+3. Add the Debian signing keys:
 
     ```sh
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys DCC9EFBF77E11517
@@ -91,7 +54,7 @@ To get a local copy up and running follow these simple steps.
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 112695A0E562B32A
     ```
 
-    4. Configure apt pinning. Create a file (you might need to use sudo) _/etc/apt/preferences.d/chromium.pref_ with the following content:
+4. Configure apt pinning. Create a file (you might need to use sudo) _/etc/apt/preferences.d/chromium.pref_ with the following content:
 
     ```sh
     # Note: 2 blank lines are required between entries
@@ -110,7 +73,7 @@ To get a local copy up and running follow these simple steps.
     Pin-Priority: 700
     ```
 
-    5. Install Chromium again
+5. Install Chromium again
 
     ```sh
     sudo apt update
