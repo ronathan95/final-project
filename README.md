@@ -7,7 +7,7 @@
 
 ## About The Project
 
-![project GIF](gif.gif)
+![project GIF](project-gif.gif)
 
 ### Built With
 
